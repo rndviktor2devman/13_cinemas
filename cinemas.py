@@ -7,8 +7,7 @@ from itertools import islice
 
 def fetch_afisha_page():
     url = "http://www.afisha.ru/msk/schedule_cinema/"
-    afisha_content = requests.get(url).content
-    return parse_afisha_list(afisha_content)
+    return requests.get(url).content
 
 
 def parse_afisha_list(raw_html):
@@ -85,7 +84,8 @@ if __name__ == '__main__':
                         help="Add count cinemas as a sorting key",
                         action="store_true")
     args = parser.parse_args()
-    data = fetch_afisha_page()
+    raw_afisha_page = fetch_afisha_page()
+    data = parse_afisha_list(raw_afisha_page)
     for movie in data:
         fetch_movie_info(movie)
     output_movies_to_console(data, args)
