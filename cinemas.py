@@ -36,19 +36,19 @@ def fetch_movie_info(description):
         kinopoisk_content = requests.get(kinopoisk_url,
                                       params=params).content
         soup = BS(kinopoisk_content, "lxml")
-        item = soup.find('div', "element most_wanted")
-        rating = item.find('div', "rating")
+        wanted_item = soup.find('div', "element most_wanted")
+        rating = wanted_item.find('div', "rating")
         if rating is not None:
-            vote_str = rating['title']
-            voted_full = vote_str[vote_str.find('(')+1: vote_str.find(')')]
-            voted = [int(s) for s in voted_full.split() if s.isdigit()]
-            number_voted = 0
-            for i in range(len(voted)):
-                numb = len(voted) - i
-                number_voted += voted[numb-1] * math.pow(1000, i)
+            item = rating['title']
+            vote_raw = item[item.find('(')+1: item.find(')')]
+            digits = [int(s) for s in vote_raw.split() if s.isdigit()]
+            full_number = 0
+            for i in range(len(digits)):
+                number = len(digits) - i
+                full_number += digits[number-1] * math.pow(1000, i)
 
             description['rating'] = rating.text
-            description['voted'] = int(number_voted)
+            description['voted'] = int(full_number)
         else:
             description['rating'] = 0
             description['voted'] = 0
