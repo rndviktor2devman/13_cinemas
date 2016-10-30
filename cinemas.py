@@ -49,7 +49,7 @@ def fetch_movie_info(description):
 
         description['rating'] = rating.text
         description['voted'] = int(number_voted)
-    except Exception:
+    except (IndexError, AttributeError, KeyError):
         description['rating'] = 0
         description['voted'] = 0
 
