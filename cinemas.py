@@ -7,8 +7,8 @@ from itertools import islice
 
 def fetch_afisha_page():
     url = "http://www.afisha.ru/msk/schedule_cinema/"
-    url_text = requests.get(url).content
-    return parse_afisha_list(url_text)
+    afisha_content = requests.get(url).content
+    return parse_afisha_list(afisha_content)
 
 
 def parse_afisha_list(raw_html):
@@ -34,9 +34,9 @@ def fetch_movie_info(description):
                       "what": "",
                       "kp_query": description['title']}
     try:
-        kinopoisk_html = requests.get(kinopoisk_url,
+        kinopoisk_content = requests.get(kinopoisk_url,
                                       params=params).content
-        soup = BS(kinopoisk_html, "lxml")
+        soup = BS(kinopoisk_content, "lxml")
         item = soup.find('div', "element most_wanted")
         rating = item.find('div', "rating")
         vote_str = rating['title']
