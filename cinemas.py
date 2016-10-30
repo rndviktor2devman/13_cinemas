@@ -89,4 +89,3 @@ if __name__ == '__main__':
     for movie in data:
         fetch_movie_info(movie)
     output_movies_to_console(data, args)
-
