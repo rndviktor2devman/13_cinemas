@@ -12,26 +12,26 @@ def fetch_afisha_page():
 
 def parse_afisha_list(raw_html):
     soup = BS(raw_html, "lxml")
-    descriptions = []
+    movies = []
     for item in soup.find_all('div',
                               "object s-votes-hover-area collapsed"):
-        description = {}
+        movie = {}
         a = item.find('h3', "usetags")
         ref = a.find('a', href=True)
-        description["title"] = a.text
-        description["afishaUrl"] = "http:{}".format(ref['href'])
+        movie["title"] = a.text
+        movie["afishaUrl"] = "http:{}".format(ref['href'])
         table = item.find('table')
-        description["cinemas"] = len(table.find_all('tr'))
-        descriptions.append(description)
+        movie["cinemas"] = len(table.find_all('tr'))
+        movies.append(movie)
 
-    return descriptions
+    return movies
 
 
-def fetch_movie_info(description):
+def fetch_movie_info(movie):
     kinopoisk_url = "https://www.kinopoisk.ru/index.php"
     params = {"first": "no",
                       "what": "",
-                      "kp_query": description['title']}
+                      "kp_query": movie['title']}
     try:
         kinopoisk_content = requests.get(kinopoisk_url,
                                       params=params).content
@@ -47,14 +47,14 @@ def fetch_movie_info(description):
                 number = len(digits) - i
                 full_number += digits[number-1] * math.pow(1000, i)
 
-            description['rating'] = rating.text
-            description['voted'] = int(full_number)
+            movie['rating'] = rating.text
+            movie['voted'] = int(full_number)
         else:
-            description['rating'] = 0
-            description['voted'] = 0
+            movie['rating'] = 0
+            movie['voted'] = 0
     except (IndexError, AttributeError, KeyError):
-        description['rating'] = 0
-        description['voted'] = 0
+        movie['rating'] = 0
+        movie['voted'] = 0
 
 
 def output_movies_to_console(movies, args, output_length=10):
@@ -85,7 +85,7 @@ if __name__ == '__main__':
                         action="store_true")
     args = parser.parse_args()
     raw_afisha_page = fetch_afisha_page()
-    data = parse_afisha_list(raw_afisha_page)
-    for movie in data:
+    movies = parse_afisha_list(raw_afisha_page)
+    for movie in movies:
         fetch_movie_info(movie)
-    output_movies_to_console(data, args)
+    output_movies_to_console(movies, args)
